@@ -24,10 +24,18 @@ class Background(pygame.sprite.Sprite):
         # self.rect.y = random.randrange(-300, -20)
         # self.rect.x = random.randrange(SCREEN_WIDTH)
         self.rect.x = - (self.imgWSize)
+    
+    #Move layer left/right
+    def shiftLevelX(self, shiftX):
+        self.levelShiftX += shiftX
+        
+        for layer in self.layers:
+            for tile in layer.tiles:
+                tile.rect.x += shiftX
  
     def update(self):
         """ Automatically called when we need to move the block. """
         if self.rect.x > SCREEN_WIDTH:
             self.reset_pos()
-        self.rect.x = int (self.bgInfo["speed"]) + self.rect.x
-        print(self.bgInfo["name"] + ": " + str(self.rect.x))
+        # self.rect.x = int (self.bgInfo["speed"]) + self.rect.x
+        # print(self.bgInfo["name"] + ": " + str(self.rect.x))

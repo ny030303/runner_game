@@ -1,26 +1,37 @@
-import sys
 import pygame
 import package
+# from package.Model.Level import Level
 
 #### pygame에 사용되는 전역변수 선언
 SCREEN_WIDTH = 960
 SCREEN_HEIGHT = 720
 SCREEN_TILE = 75
 
+#Tiled map layer of tiles that you collide with
+MAP_COLLISION_LAYER = 1
+
 class GameMain(object):
     
     def __init__(self):
         self.game_over = False
+        #Set up a level to load
+        self.currentLevelNumber = 0
  
         # Create sprite lists
         self.all_sprites_list = pygame.sprite.Group()
         
+        # Create your Level (first level is 1)
+        self.levels = [] 
+        self.levels.append(package.Level(fileName = "./Resources/level1.tmx"))
+        self.currentLevel = self.levels[self.currentLevelNumber]
+        
         # Create the player
-        self.player = package.UserController()
+        self.player = package.User()
+        self.player.currentLevel = self.currentLevel
+        
         self.background = package.BackgroundController()
         self.all_sprites_list.add(self.background.all_bg_list)
-        self.all_sprites_list.add(self.player.all_user_list)
-        
+        self.all_sprites_list.add(self.player)
     def process_events(self):
         """ Process all of the events. Return a "True" if we need
             to close the window. """
@@ -28,10 +39,24 @@ class GameMain(object):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    self.player.goLeft()
+                elif event.key == pygame.K_RIGHT:
+                    self.player.goRight()
+                elif event.key == pygame.K_UP:
+                    self.player.jump()
+                elif event.key == pygame.K_DOWN:
+                    self.player.duck()
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT and self.player.changeX < 0:
+                    self.player.stop()
+                elif event.key == pygame.K_RIGHT and self.player.changeX > 0:
+                    self.player.stop()
+            
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.game_over:
                     self.__init__()
- 
         return False
  
     def run_logic(self):
@@ -46,7 +71,7 @@ class GameMain(object):
  
     def display_frame(self, screen):
         """ Display everything to the screen for the game. """
-        screen.fill((255,255,255))
+        # screen.fill((255,255,255))
  
         if self.game_over:
             # font = pygame.font.Font("Serif", 25)
@@ -58,6 +83,8 @@ class GameMain(object):
  
         if not self.game_over:
             self.all_sprites_list.draw(screen)
+            self.currentLevel.draw(screen)
+            self.player.draw(screen)
  
         pygame.display.flip()
         
@@ -90,7 +117,7 @@ def main():
         game.display_frame(screen)
  
         # Pause for the next frame
-        clock.tick(10)
+        clock.tick(30)
  
     # Close window and exit
     pygame.quit()
