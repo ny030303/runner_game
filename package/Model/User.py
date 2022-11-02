@@ -42,6 +42,20 @@ USER_IMAGE_ARR = [
     }
 ]
 
+#Sprit sheet class to load sprites from player spritesheet
+class SpriteSheet(object):
+    def __init__(self, fileName):
+        self.sheet = pygame.image.load(fileName)
+        self.sheet = self.sheet.subsurface(6, 0, 24, 32)
+        # self.sheet = pygame.transform.scale(self.sheet, (90, 90))
+
+    def image_at(self, rectangle):
+        rect = pygame.Rect(rectangle)
+        image = pygame.Surface(rect.size, pygame.SRCALPHA, 32).convert_alpha()
+        
+        image.blit(self.sheet, (0, 0), rect)
+        return image
+        
 class User(pygame.sprite.Sprite):
     """ This class represents a simple block the player collects. """
  
@@ -49,8 +63,12 @@ class User(pygame.sprite.Sprite):
         super().__init__()
         self.img_num = 0
         self.img_frame = 1
+        # print(self.img_frame)
         self.image = pygame.image.load(str(USER_IMAGE_ARR[self.img_num]["url"])+str(self.img_frame) + '.png')
-        self.image = pygame.transform.scale(self.image, (90, 90)) # 이미지 스케일링
+        self.image = self.image.subsurface(6, 0, 24, 32)
+        # self.image = sprites.image_at((20, 0, 70, 90))
+        
+        self.image = pygame.transform.scale(self.image, (24*2, 32*2)) # 이미지 스케일링
         self.rect = self.image.get_rect()
         
         # self.reset_pos()
@@ -81,8 +99,15 @@ class User(pygame.sprite.Sprite):
         # print(self.img_frame)
         if self.img_frame > USER_IMAGE_ARR[self.img_num]["size"]: self.img_frame = 1
         if self.img_frame % 1 == 0:
+            # self.image = pygame.image.load(str(USER_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
+            # self.image = pygame.transform.scale(self.image, (90, 90)) # 이미지 스케일링
+            # print(str(USER_IMAGE_ARR[self.img_num]["url"])+str(self.img_frame) + '.png')
+            # self.image = SpriteSheet(str(USER_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
+            
             self.image = pygame.image.load(str(USER_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
-            self.image = pygame.transform.scale(self.image, (90, 90)) # 이미지 스케일링
+            self.image = self.image.subsurface(6, 0, 24, 32)
+            self.image = pygame.transform.scale(self.image, (24*2, 32*2)) # 이미지 스케일링
+            # self.image = sprites.image_at((20, 0, 70, 90))
             if self.direction == "left":
                 self.image = pygame.transform.flip(self.image, True, False)
             # self.rect = self.image.get_rect()
@@ -122,7 +147,9 @@ class User(pygame.sprite.Sprite):
         
     #Draw player
     def draw(self, screen):
+        
         screen.blit(self.image, self.rect)
+        # screen.blit(self.image, (70, 90), self.rect)
         
     def update(self):
             # """ Automatically called when we need to move the block. """
@@ -154,9 +181,9 @@ class User(pygame.sprite.Sprite):
             self.rect.left = 400
             self.currentLevel.shiftLevelX(difference)
             
-        if self.rect.bottom >= SCREEN_HEIGHT - 400:
-            difference = self.rect.bottom - (SCREEN_HEIGHT - 400)
-            self.rect.bottom = SCREEN_HEIGHT - 400
+        if self.rect.bottom >= SCREEN_HEIGHT - 200:
+            difference = self.rect.bottom - (SCREEN_HEIGHT - 200)
+            self.rect.bottom = SCREEN_HEIGHT - 200
             self.currentLevel.shiftLevelY(-difference)
         
         #Move screen is player reaches screen bounds
