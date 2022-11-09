@@ -8,7 +8,7 @@ SCREEN_HEIGHT = 720
 SCREEN_TILE = 75
 
 #Tiled map layer of tiles that you collide with
-MAP_COLLISION_LAYER = 1
+MAP_COLLISION_LAYER = 0
 
 class GameMain(object):
     

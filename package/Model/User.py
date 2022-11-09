@@ -66,7 +66,6 @@ class User(pygame.sprite.Sprite):
         # print(self.img_frame)
         self.image = pygame.image.load(str(USER_IMAGE_ARR[self.img_num]["url"])+str(self.img_frame) + '.png')
         self.image = self.image.subsurface(6, 0, 24, 32)
-        # self.image = sprites.image_at((20, 0, 70, 90))
         
         self.image = pygame.transform.scale(self.image, (24*2, 32*2)) # 이미지 스케일링
         self.rect = self.image.get_rect()
@@ -98,16 +97,10 @@ class User(pygame.sprite.Sprite):
         self.img_frame += 0.5
         # print(self.img_frame)
         if self.img_frame > USER_IMAGE_ARR[self.img_num]["size"]: self.img_frame = 1
-        if self.img_frame % 1 == 0:
-            # self.image = pygame.image.load(str(USER_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
-            # self.image = pygame.transform.scale(self.image, (90, 90)) # 이미지 스케일링
-            # print(str(USER_IMAGE_ARR[self.img_num]["url"])+str(self.img_frame) + '.png')
-            # self.image = SpriteSheet(str(USER_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
-            
+        if self.img_frame % 1 == 0: 
             self.image = pygame.image.load(str(USER_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
             self.image = self.image.subsurface(6, 0, 24, 32)
             self.image = pygame.transform.scale(self.image, (24*2, 32*2)) # 이미지 스케일링
-            # self.image = sprites.image_at((20, 0, 70, 90))
             if self.direction == "left":
                 self.image = pygame.transform.flip(self.image, True, False)
             # self.rect = self.image.get_rect()
@@ -155,12 +148,12 @@ class User(pygame.sprite.Sprite):
             # """ Automatically called when we need to move the block. """
             #Update player position by change
         
-        
         # print(self.changeX, ", ", self.changeY)
         self.rect.x += self.changeX
         
         #Get tiles in collision layer that player is now touching
         tileHitList = pygame.sprite.spritecollide(self, self.currentLevel.layers[MAP_COLLISION_LAYER].tiles, False)
+        # pygame.sprite.collide_mask()
         
         #Move player to correct side of that block
         for tile in tileHitList:
