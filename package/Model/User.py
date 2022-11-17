@@ -42,19 +42,6 @@ USER_IMAGE_ARR = [
     }
 ]
 
-#Sprit sheet class to load sprites from player spritesheet
-class SpriteSheet(object):
-    def __init__(self, fileName):
-        self.sheet = pygame.image.load(fileName)
-        self.sheet = self.sheet.subsurface(6, 0, 24, 32)
-        # self.sheet = pygame.transform.scale(self.sheet, (90, 90))
-
-    def image_at(self, rectangle):
-        rect = pygame.Rect(rectangle)
-        image = pygame.Surface(rect.size, pygame.SRCALPHA, 32).convert_alpha()
-        
-        image.blit(self.sheet, (0, 0), rect)
-        return image
         
 class User(pygame.sprite.Sprite):
     """ This class represents a simple block the player collects. """
@@ -154,13 +141,20 @@ class User(pygame.sprite.Sprite):
         #Get tiles in collision layer that player is now touching
         tileHitList = pygame.sprite.spritecollide(self, self.currentLevel.layers[MAP_COLLISION_LAYER].tiles, False)
         # pygame.sprite.collide_mask()
+        # tileHitList2 = pygame.sprite.spritecollide(self, self.currentLevel.layers[2].tiles, False, pygame.sprite.collide_mask)
         
         #Move player to correct side of that block
         for tile in tileHitList:
+            if tile.rect.collidepoint(self.rect.x, self.rect.y):
+                print(tile.rect.x,tile.rect.y)
+                
             if self.changeX > 0:
                 self.rect.right = tile.rect.left
             else:
                 self.rect.left = tile.rect.right
+        
+        # for tile in tileHitList2:
+            # self.serect_position(claw.rect.center, claw.angle)
         
         #Move screen if player reaches screen bounds
         if self.rect.right >= SCREEN_WIDTH - 400:

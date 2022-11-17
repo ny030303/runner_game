@@ -10,6 +10,9 @@ class Level(object):
         #Create list of layers for map
         self.layers = []
         
+        #Create list of enemys for map
+        self.enemys = []
+        
         #Amount of level shift left/right
         self.levelShiftX = 0
         self.levelShiftY = 0
