@@ -6,8 +6,8 @@ from GameMain import MAP_COLLISION_LAYER, SCREEN_HEIGHT, SCREEN_WIDTH
 
 BEE_IMAGE_ARR = [
     {
-        "name": "idle",
-        "url": 'images\PNG\sprites\enemies\bee\bee-',
+        "name": "bee",
+        "url": 'images/PNG/sprites/enemies/bee/bee-',
         "size": 8
     }
 ]
@@ -17,11 +17,8 @@ class Bee(pygame.sprite.Sprite):
         super().__init__()
         self.img_num = 0
         self.img_frame = 1
-        # print(self.img_frame)
-        self.image = pygame.image.load(str(BEE_IMAGE_ARR[self.img_num]["url"])+str(self.img_frame) + '.png')
-        # self.image = self.image.subsurface(6, 0, 24, 32) # 좌표
         
-        self.image = pygame.transform.scale(self.image, (24*2, 32*2)) # 이미지 스케일링
+        self.load_img()
         self.rect = self.image.get_rect()
         
         # self.reset_pos()
@@ -29,22 +26,27 @@ class Bee(pygame.sprite.Sprite):
         self.changeY = 0
         self.direction = "right"
         
+         #Players current level, set after object initialized in game constructor
+        self.currentLevel = None
         self.reset_pos()
  
     def reset_pos(self):
         """ Called when the block is 'collected' or falls off
             the screen. """
-        self.rect.y = 31*10
-        self.rect.x = 0
+        self.rect.y = 31*19
+        self.rect.x = 31*9
+    
+    def load_img(self):
+        self.image = pygame.image.load(str(BEE_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
+        self.image = self.image.subsurface(6, 0, 31, 39) # 좌표
+        self.image = pygame.transform.scale(self.image, (31*1.5, 39*1.5)) # 이미지 스케일링
         
     def draw_frame_img(self):
         self.img_frame += 0.5
         # print(self.img_frame)
         if self.img_frame > BEE_IMAGE_ARR[self.img_num]["size"]: self.img_frame = 1
         if self.img_frame % 1 == 0: 
-            self.image = pygame.image.load(str(BEE_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
-            # self.image = self.image.subsurface(6, 0, 24, 32)
-            self.image = pygame.transform.scale(self.image, (24*2, 32*2)) # 이미지 스케일링
+            self.load_img()
             if self.direction == "left": 
                 self.image = pygame.transform.flip(self.image, True, False) # 좌우반전
         
@@ -70,5 +72,4 @@ class Bee(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
         
     def update(self):
-        
         self.draw_frame_img()

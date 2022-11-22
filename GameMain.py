@@ -16,6 +16,7 @@ class GameMain(object):
         self.game_over = False
         #Set up a level to load
         self.currentLevelNumber = 0
+        self.currentBgNumber = 0
  
         # Create sprite lists
         self.all_sprites_list = pygame.sprite.Group()
@@ -25,12 +26,21 @@ class GameMain(object):
         self.levels.append(package.Level(fileName = "./Resources/level1.tmx"))
         self.currentLevel = self.levels[self.currentLevelNumber]
         
+         # Create the background
+        self.bgs = [] 
+        self.bgs.append(package.BackgroundController())
+        self.currentBg = self.bgs[self.currentBgNumber]
+        
+        # self.bee.currentLevel = self.currentLevel
+        # self.bee.currentBg = self.currentBg
+        
         # Create the player
         self.player = package.User()
         self.player.currentLevel = self.currentLevel
+        self.player.currentBg = self.currentBg
         
-        self.background = package.BackgroundController()
-        self.all_sprites_list.add(self.background.all_bg_list)
+        
+        # self.all_sprites_list.add(self.background.all_bg_list)
         self.all_sprites_list.add(self.player)
     def process_events(self):
         """ Process all of the events. Return a "True" if we need
@@ -67,6 +77,7 @@ class GameMain(object):
         if not self.game_over:
             # Move all the sprites
             self.all_sprites_list.update()
+            self.currentLevel.update()
             
  
     def display_frame(self, screen):
@@ -82,6 +93,7 @@ class GameMain(object):
             screen.blit(text, [center_x, center_y])
  
         if not self.game_over:
+            self.currentBg.draw(screen)
             self.all_sprites_list.draw(screen)
             self.currentLevel.draw(screen)
             self.player.draw(screen)

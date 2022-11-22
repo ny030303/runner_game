@@ -17,6 +17,8 @@ class Background(pygame.sprite.Sprite):
         if wPos == 0: self.rect.x = 0
         elif wPos == 1: self.rect.x = self.imgWSize
         elif wPos == 2: self.rect.x = - (self.imgWSize)
+        elif wPos == 3: self.rect.x =  (self.imgWSize * 2) 
+        elif wPos == 4: self.rect.x = - (self.imgWSize * 2) 
  
     def reset_pos(self):
         """ Called when the block is 'collected' or falls off
@@ -25,17 +27,12 @@ class Background(pygame.sprite.Sprite):
         # self.rect.x = random.randrange(SCREEN_WIDTH)
         self.rect.x = - (self.imgWSize)
     
-    #Move layer left/right
-    def shiftLevelX(self, shiftX):
-        self.levelShiftX += shiftX
+    def moveX(self, mX):
+        self.rect.x += mX
+        # print(self.bgInfo["name"] + ": " + str(self.rect.x))
         
-        for layer in self.layers:
-            for tile in layer.tiles:
-                tile.rect.x += shiftX
- 
     def update(self):
         """ Automatically called when we need to move the block. """
         if self.rect.x > SCREEN_WIDTH:
             self.reset_pos()
-        # self.rect.x = int (self.bgInfo["speed"]) + self.rect.x
-        # print(self.bgInfo["name"] + ": " + str(self.rect.x))
+        

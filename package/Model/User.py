@@ -51,10 +51,7 @@ class User(pygame.sprite.Sprite):
         self.img_num = 0
         self.img_frame = 1
         # print(self.img_frame)
-        self.image = pygame.image.load(str(USER_IMAGE_ARR[self.img_num]["url"])+str(self.img_frame) + '.png')
-        self.image = self.image.subsurface(6, 0, 24, 32)
-        
-        self.image = pygame.transform.scale(self.image, (24*2, 32*2)) # 이미지 스케일링
+        self.load_img()
         self.rect = self.image.get_rect()
         
         # self.reset_pos()
@@ -71,6 +68,7 @@ class User(pygame.sprite.Sprite):
         
         #Players current level, set after object initialized in game constructor
         self.currentLevel = None
+        self.currentBg = None
         
         self.reset_pos()
  
@@ -79,15 +77,18 @@ class User(pygame.sprite.Sprite):
             the screen. """
         self.rect.y = 31*10
         self.rect.x = 0
+    
+    def load_img(self):
+        self.image = pygame.image.load(str(USER_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
+        self.image = self.image.subsurface(6, 0, 24, 32)
+        self.image = pygame.transform.scale(self.image, (24*2, 32*2)) # 이미지 스케일링
         
     def draw_frame_img(self):
         self.img_frame += 0.5
         # print(self.img_frame)
         if self.img_frame > USER_IMAGE_ARR[self.img_num]["size"]: self.img_frame = 1
         if self.img_frame % 1 == 0: 
-            self.image = pygame.image.load(str(USER_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
-            self.image = self.image.subsurface(6, 0, 24, 32)
-            self.image = pygame.transform.scale(self.image, (24*2, 32*2)) # 이미지 스케일링
+            self.load_img()
             if self.direction == "left":
                 self.image = pygame.transform.flip(self.image, True, False)
             # self.rect = self.image.get_rect()
@@ -161,12 +162,14 @@ class User(pygame.sprite.Sprite):
             difference = self.rect.right - (SCREEN_WIDTH - 400)
             self.rect.right = SCREEN_WIDTH - 400
             self.currentLevel.shiftLevelX(-difference)
+            self.currentBg.shiftBgX(-difference)
         
         #Move screen is player reaches screen bounds
         if self.rect.left <= 400:
             difference = 400 - self.rect.left
             self.rect.left = 400
             self.currentLevel.shiftLevelX(difference)
+            self.currentBg.shiftBgX(difference)
             
         if self.rect.bottom >= SCREEN_HEIGHT - 200:
             difference = self.rect.bottom - (SCREEN_HEIGHT - 200)
