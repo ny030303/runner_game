@@ -72,4 +72,6 @@ class Bee(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
         
     def update(self):
+        
+        
         self.draw_frame_img()

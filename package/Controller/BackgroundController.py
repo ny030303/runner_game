@@ -9,7 +9,7 @@ class BackgroundController():
             {
                 "name": "bg1",
                 "url": "background.png",
-                "width": 192,
+                "width": 190,
                 "speed": 0.2
             },
             {
@@ -44,7 +44,7 @@ class BackgroundController():
         for i in range(0, len(self.img_url_list)):
             for bg in self.all_bg_list[i]:
                 # print(float(bg.bgInfo["speed"]))
-                if 0.4 == float(bg.bgInfo["speed"]):
+                # if 0.4 == float(bg.bgInfo["speed"]):
                     bg.moveX(shiftX*float(bg.bgInfo["speed"]))
                     
         

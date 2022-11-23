@@ -19,7 +19,11 @@ class Layer(object):
             for y in range(self.mapObject.height):
                 img = self.mapObject.get_tile_image(x, y, self.index)
                 if img:
-                    self.tiles.add(Tile(image = img, x = (x * self.mapObject.tilewidth), y = (y * self.mapObject.tileheight)))
+                    prop = self.mapObject.get_tile_properties(x, y, self.index)
+                    if prop:
+                        self.tiles.add(Tile(image = img, x = (x * self.mapObject.tilewidth), y = (y * self.mapObject.tileheight), type = prop["Type"]))
+                    else:
+                        self.tiles.add(Tile(image = img, x = (x * self.mapObject.tilewidth), y = (y * self.mapObject.tileheight)))
 
     #Draw layer
     def draw(self, screen):

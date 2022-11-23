@@ -96,7 +96,7 @@ class User(pygame.sprite.Sprite):
     #Make player jump
     def jump(self):
         #Check if player is on ground
-        print(self.rect.y)
+        # print(self.rect.y)
         self.rect.y += 2
         tileHitList = pygame.sprite.spritecollide(self, self.currentLevel.layers[MAP_COLLISION_LAYER].tiles, False)
         self.rect.y -= 2
@@ -146,8 +146,9 @@ class User(pygame.sprite.Sprite):
         
         #Move player to correct side of that block
         for tile in tileHitList:
-            if tile.rect.collidepoint(self.rect.x, self.rect.y):
-                print(tile.rect.x,tile.rect.y)
+            print(tile.type)
+            # if tile.rect.collidepoint(self.rect.x, self.rect.y):
+            #     print(tile.rect.x,tile.rect.y)
                 
             if self.changeX > 0:
                 self.rect.right = tile.rect.left
