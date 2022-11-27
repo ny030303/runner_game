@@ -50,20 +50,40 @@ class GameMain(object):
             if event.type == pygame.QUIT:
                 return True
             elif event.type == pygame.KEYDOWN:
+                tileHitList = self.player.getTileHitList()
+                for tile in tileHitList:
+                    if tile.type == "ladder":
+                        try:
+                            self.player.swipe_climb_mode(self.player.climbimg)
+                        except:
+                            print('ERR: climb mode was not swiped')
+                            
                 if event.key == pygame.K_LEFT:
                     self.player.goLeft()
                 elif event.key == pygame.K_RIGHT:
+                    print(self.player.climbimg)
                     self.player.goRight()
                 elif event.key == pygame.K_UP:
-                    self.player.jump()
+                    if self.player.climbimg != False:
+                            self.player.climb_up()
+                    else:
+                        self.player.jump()
                 elif event.key == pygame.K_DOWN:
-                    self.player.duck()
+                    if self.player.climbimg != False:
+                            self.player.climb_down()
+                    else:
+                        self.player.duck()
             elif event.type == pygame.KEYUP:
+                        
                 if event.key == pygame.K_LEFT and self.player.changeX < 0:
-                    self.player.stop()
+                    self.player.stopX()
                 elif event.key == pygame.K_RIGHT and self.player.changeX > 0:
-                    self.player.stop()
-            
+                    self.player.stopX()
+
+                if self.player.img_num == 1 and event.key == pygame.K_UP and self.player.changeY < 0:
+                    self.player.stopY()
+                elif self.player.img_num == 1 and event.key == pygame.K_DOWN and self.player.changeY > 0 :
+                    self.player.stopY()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.game_over:
                     self.__init__()

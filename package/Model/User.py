@@ -59,6 +59,7 @@ class User(pygame.sprite.Sprite):
         self.changeY = 0
         self.direction = "right"
         
+        self.climbimg = False
         #Boolean to check if player is running, current running frame, and time since last frame change
         self.running = False
         self.runningFrame = 0
@@ -118,45 +119,80 @@ class User(pygame.sprite.Sprite):
         self.changeX = -5
     
     #Stop moving
-    def stop(self):
+    def stopX(self):
         self.running = False
         self.changeX = 0
     
+    def stopY(self):
+        self.running = False
+        self.changeY = 0
+        
     def duck(self):
         self.running = False
         self.changeX = 0
+    
+    def climb_up(self):
+        self.direction = "up"
+        self.running = True
+        self.changeY = -5
+    def climb_down(self):
+        self.direction = "down"
+        self.running = True
+        self.changeY = 5
+    
+    def swipe_climb_mode(self, tile):
+        print("change!")
+        self.img_num = 1
+        self.img_frame = 1
+        self.stopX()
+        self.stopY()
+        self.rect.right = tile.rect.right
+        # self.rect.bottom = tile.rect.bottom
+        self.load_img()
+        
+    def unswipe_climb_mode(self, tile):
+        print("unchange!")
+        self.img_num = 0
+        self.img_frame = 1
+        self.stopX()
+        self.stopY()
+        self.rect.right = tile.rect.right
+        # self.rect.bottom = tile.rect.bottom
+        self.load_img()
         
     #Draw player
     def draw(self, screen):
-        
         screen.blit(self.image, self.rect)
         # screen.blit(self.image, (70, 90), self.rect)
+    
+    def getTileHitList(self):
+        return pygame.sprite.spritecollide(self, self.currentLevel.layers[MAP_COLLISION_LAYER].tiles, False)
         
     def update(self):
-            # """ Automatically called when we need to move the block. """
-            #Update player position by change
+        # """ Automatically called when we need to move the block. """
+        #Update player position by change
         
-        # print(self.changeX, ", ", self.changeY)
-        self.rect.x += self.changeX
+        if self.img_num != 1: # 사다리
+            self.rect.x += self.changeX
         
         #Get tiles in collision layer that player is now touching
         tileHitList = pygame.sprite.spritecollide(self, self.currentLevel.layers[MAP_COLLISION_LAYER].tiles, False)
-        # pygame.sprite.collide_mask()
-        # tileHitList2 = pygame.sprite.spritecollide(self, self.currentLevel.layers[2].tiles, False, pygame.sprite.collide_mask)
         
         #Move player to correct side of that block
         for tile in tileHitList:
-            print(tile.type)
-            # if tile.rect.collidepoint(self.rect.x, self.rect.y):
-            #     print(tile.rect.x,tile.rect.y)
-                
-            if self.changeX > 0:
-                self.rect.right = tile.rect.left
+            if tile.type == "ladder" or tile.type == "ladder-top":
+                    print("X in")
+                    if self.img_num != 1 and self.climbimg == False:
+                        self.swipe_climb_mode(tile)
+                        print(self.direction)
+                        self.climbimg = tile
+                        self.img_num = 1
             else:
-                self.rect.left = tile.rect.right
-        
-        # for tile in tileHitList2:
-            # self.serect_position(claw.rect.center, claw.angle)
+                self.climbimg = False
+                if self.changeX > 0:
+                    self.rect.right = tile.rect.left
+                else:
+                    self.rect.left = tile.rect.right
         
         #Move screen if player reaches screen bounds
         if self.rect.right >= SCREEN_WIDTH - 400:
@@ -194,32 +230,56 @@ class User(pygame.sprite.Sprite):
         if len(tileHitList) > 0:
             #Move player to correct side of that tile, update player frame
             for tile in tileHitList:
-                if self.changeY > 0:
-                    self.rect.bottom = tile.rect.top
-                    self.changeY = 1
-                    
+                
+                if(tile.type == "ladder"):
+                    print("Y in")
+                    # if self.changeY > 0 and self.img_num != 1:
+                    #     self.climbimg = tile
+                    # else:
+                    #     self.stopX()
+                    #     self.stopY()
+                    #     self.img_num = 0
+                    #     self.climbimg = False
+                    #     self.load_img()
+                    # if self.changeY > 0 and self.img_num != 1: 
+                    #     # 첫 climb 부딛힘
+                    #     self.swipe_climb_mode(tile)
+                    # self.climbimg = tile
                 else:
-                    self.rect.top = tile.rect.bottom
-                    self.changeY = 0
+                    if self.changeY > 0:
+                        self.rect.bottom = tile.rect.top
+                        self.changeY = 1
+                    else:
+                        self.rect.top = tile.rect.bottom
+                        self.changeY = 0
+                    
+                    
         #If there are not tiles in that list
         else:
-            #Update player change for jumping/falling and player frame
-            self.changeY += 0.2
-            if self.changeY > 0:
-                self.img_num = 3
+            if self.img_num == 1:
+                print("falling stop plz,,,")
+                self.stopX()
+                self.stopY()
+                self.img_num = 0
+                self.climbimg = False
+                self.load_img()
             else:
-                self.img_num = 5
-        
+                #Update player change for jumping/falling and player frame
+                self.changeY += 0.2
+                if self.changeY > 0:
+                    self.img_num = 3
+                else:
+                    self.img_num = 5
+                    
         #If player is on ground and running, update running animation
-        if self.running and self.changeY == 1:
+        if self.running and self.changeY == 1 and self.img_num != 1:
                 self.img_num = 6
         
-        
-        #-------------
+        #----Stand-----
         # stand player
-        if self.running == False and len(tileHitList) > 0:
+        if self.running == False and len(tileHitList) > 0 and self.img_num != 1:
             self.img_num = 0
-            
+                
             
         #When correct amount of time has passed, go to next frame
         if pygame.time.get_ticks() - self.runningTime > 50:
@@ -228,4 +288,8 @@ class User(pygame.sprite.Sprite):
                 self.runningFrame = 0
             else:
                 self.runningFrame += 1
-        self.draw_frame_img()
+                
+        if self.running == False and self.img_num == 1:
+            self.img_frame = 1
+        else:
+            self.draw_frame_img()
