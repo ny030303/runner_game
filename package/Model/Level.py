@@ -14,6 +14,9 @@ class Level(object):
         #Create list of enemys for map
         self.enemys = []
         
+        #Create list of Items for map
+        self.items = []
+        
         #Amount of level shift left/right
         self.levelShiftX = 0
         self.levelShiftY = 0
@@ -23,7 +26,11 @@ class Level(object):
             self.layers.append(Layer(index = layer, mapObject = self.mapObject))
             
         #Create Enemys
-        self.enemys.append(package.Bee())
+        self.enemys.append(package.Bee(20,20))
+        self.enemys.append(package.Slug(22,36))
+        
+        #Create Enemys
+        self.items.append(package.Star(79,9))
         
         self.shiftLevelY(-31*4)
         
@@ -39,6 +46,10 @@ class Level(object):
         # enemy shift X
         for enemy in self.enemys:
             enemy.rect.x += shiftX
+            
+        # item shift X
+        for item in self.items:
+            item.rect.x += shiftX
                 
     #Move layer up/down
     def shiftLevelY(self, shiftY):
@@ -51,11 +62,17 @@ class Level(object):
         # enemy shift Y   
         for enemy in self.enemys:
             enemy.rect.y += shiftY
+        
+        # enemy shift Y   
+        for item in self.items:
+            item.rect.y += shiftY
             
-            
-    def update(self):
+    def update(self, *args):
         for enemy in self.enemys:
-            enemy.update()
+            enemy.update(*args)
+        
+        for item in self.items:
+            item.update(*args)
     
     #Update layer
     def draw(self, screen):
@@ -64,3 +81,6 @@ class Level(object):
         
         for enemy in self.enemys:
             enemy.draw(screen)
+            
+        for item in self.items:
+            item.draw(screen)

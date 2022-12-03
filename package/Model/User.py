@@ -50,9 +50,21 @@ class User(pygame.sprite.Sprite):
         super().__init__()
         self.img_num = 0
         self.img_frame = 1
+        
+        self.starCount = 0
         # print(self.img_frame)
         self.load_img()
         self.rect = self.image.get_rect()
+        
+        # (100 / 이미지 수) / 100 = (100 / 이미지 수 * 100)
+        self.animation_time = round(100 / (USER_IMAGE_ARR[self.img_num]["size"] * 100), 2)
+
+        # mt와 결합하여 animation_time을 계산할 시간 초기화
+        self.current_time = 0
+        
+        self.hp = 3
+        self.hud_img = pygame.image.load('images/PNG/sprites/misc/hud/hud-4.png')
+        self.hud_img = pygame.transform.scale(self.hud_img, (150, 40))
         
         # self.reset_pos()
         self.changeX = 0
@@ -67,9 +79,16 @@ class User(pygame.sprite.Sprite):
         
         self.ducking = False
         
+         # ladder top 부딛히면 tile 정보, 아니면 False
+        self.isHitLadderX = False
+        self.isHitLadderY = False
+        
         #Players current level, set after object initialized in game constructor
         self.currentLevel = None
         self.currentBg = None
+        
+        self.hitedEnemy = None
+        self.hitedItem = None
         
         self.reset_pos()
  
@@ -77,22 +96,20 @@ class User(pygame.sprite.Sprite):
         """ Called when the block is 'collected' or falls off
             the screen. """
         self.rect.y = 31*10
-        self.rect.x = 0
+        self.rect.x = 31*3
     
     def load_img(self):
+        
         self.image = pygame.image.load(str(USER_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
         self.image = self.image.subsurface(6, 0, 24, 32)
         self.image = pygame.transform.scale(self.image, (24*2, 32*2)) # 이미지 스케일링
         
     def draw_frame_img(self):
-        self.img_frame += 0.5
-        # print(self.img_frame)
         if self.img_frame > USER_IMAGE_ARR[self.img_num]["size"]: self.img_frame = 1
         if self.img_frame % 1 == 0: 
             self.load_img()
             if self.direction == "left":
                 self.image = pygame.transform.flip(self.image, True, False)
-            # self.rect = self.image.get_rect()
     
     #Make player jump
     def jump(self):
@@ -104,19 +121,19 @@ class User(pygame.sprite.Sprite):
         
         if len(tileHitList) > 0:
             self.img_num = 5
-            self.changeY = -6 
+            self.changeY = -7
         
     #Move right
     def goRight(self):
         self.direction = "right"
         self.running = True
-        self.changeX = 5
+        self.changeX = 3
     
     #Move left
     def goLeft(self):
         self.direction = "left"
         self.running = True
-        self.changeX = -5
+        self.changeX = -3
     
     #Stop moving
     def stopX(self):
@@ -164,14 +181,25 @@ class User(pygame.sprite.Sprite):
     def draw(self, screen):
         screen.blit(self.image, self.rect)
         # screen.blit(self.image, (70, 90), self.rect)
-    
+        
+    # hud 이미지 로드
+    # 위의 draw 함수에서 hud 이미지를 blit 하도록 해봤는데, 마지막 이미지인 hud-1.png가 업데이트 되지 않은 채로 게임오버가 돼서 hud 이미지용 함수를 따로 생성함
+    # GameMain의 display_frame 함수에서만 1번 호출됨
+    def hud_draw(self, screen):
+        screen.blit(self.hud_img, (0, 0))
+        
     def getTileHitList(self):
         return pygame.sprite.spritecollide(self, self.currentLevel.layers[MAP_COLLISION_LAYER].tiles, False)
         
-    def update(self):
+    def update(self, mt):
         # """ Automatically called when we need to move the block. """
-        #Update player position by change
+        self.current_time += mt
         
+        # 부딛힘 검사 전 초기화
+        self.isHitLadderX = False
+        self.isHitLadderY = False
+        
+        #Update player position by change
         if self.img_num != 1: # 사다리
             self.rect.x += self.changeX
         
@@ -181,10 +209,11 @@ class User(pygame.sprite.Sprite):
         #Move player to correct side of that block
         for tile in tileHitList:
             if tile.type == "ladder" or tile.type == "ladder-top":
-                    print("X in")
+                    if tile.type == "ladder-top": self.isHitLadderX = tile
+                    # print("X in")
                     if self.img_num != 1 and self.climbimg == False:
                         self.swipe_climb_mode(tile)
-                        print(self.direction)
+                        # print(self.direction)
                         self.climbimg = tile
                         self.img_num = 1
             else:
@@ -199,14 +228,14 @@ class User(pygame.sprite.Sprite):
             difference = self.rect.right - (SCREEN_WIDTH - 400)
             self.rect.right = SCREEN_WIDTH - 400
             self.currentLevel.shiftLevelX(-difference)
-            self.currentBg.shiftBgX(-difference)
+            self.currentBg.shiftBgX(-difference, mt)
         
         #Move screen is player reaches screen bounds
         if self.rect.left <= 400:
             difference = 400 - self.rect.left
             self.rect.left = 400
             self.currentLevel.shiftLevelX(difference)
-            self.currentBg.shiftBgX(difference)
+            self.currentBg.shiftBgX(difference, mt)
             
         if self.rect.bottom >= SCREEN_HEIGHT - 200:
             difference = self.rect.bottom - (SCREEN_HEIGHT - 200)
@@ -231,20 +260,8 @@ class User(pygame.sprite.Sprite):
             #Move player to correct side of that tile, update player frame
             for tile in tileHitList:
                 
-                if(tile.type == "ladder"):
-                    print("Y in")
-                    # if self.changeY > 0 and self.img_num != 1:
-                    #     self.climbimg = tile
-                    # else:
-                    #     self.stopX()
-                    #     self.stopY()
-                    #     self.img_num = 0
-                    #     self.climbimg = False
-                    #     self.load_img()
-                    # if self.changeY > 0 and self.img_num != 1: 
-                    #     # 첫 climb 부딛힘
-                    #     self.swipe_climb_mode(tile)
-                    # self.climbimg = tile
+                if tile.type == "ladder" or tile.type == "ladder-top":
+                    if tile.type == "ladder-top": self.isHitLadderY = tile
                 else:
                     if self.changeY > 0:
                         self.rect.bottom = tile.rect.top
@@ -257,7 +274,7 @@ class User(pygame.sprite.Sprite):
         #If there are not tiles in that list
         else:
             if self.img_num == 1:
-                print("falling stop plz,,,")
+                # print("falling stop plz,,,")
                 self.stopX()
                 self.stopY()
                 self.img_num = 0
@@ -275,6 +292,34 @@ class User(pygame.sprite.Sprite):
         if self.running and self.changeY == 1 and self.img_num != 1:
                 self.img_num = 6
         
+        # ---Item---
+        itemsHitList = pygame.sprite.spritecollide(self, self.currentLevel.items, False)
+        
+        if len(itemsHitList) > 0:
+            for item in itemsHitList:
+                if self.hitedItem == None:
+                    print("item hit: ", item)
+                    print("스테이지 전환", item)
+                    self.starCount += 1
+                    self.hitedItem = item
+        else:
+            self.hitedItem = None
+            
+        # ---Enemy---
+        enemyHitList = pygame.sprite.spritecollide(self, self.currentLevel.enemys, False)
+        
+        if len(enemyHitList) > 0:
+            for enemy in enemyHitList:
+                if self.hitedEnemy == None:
+                    print("enemy hit: ", enemy)
+                    for x in range(3, -1, -1):
+                        if self.hp == x:
+                            self.hud_img = pygame.image.load(('images/PNG/sprites/misc/hud/hud-')+str(int(x)) + '.png')
+                            self.hud_img = pygame.transform.scale(self.hud_img, (150, 40))
+                    self.hp -= 1
+                    self.hitedEnemy = enemy
+        else:
+            self.hitedEnemy = None
         #----Stand-----
         # stand player
         if self.running == False and len(tileHitList) > 0 and self.img_num != 1:
@@ -292,4 +337,15 @@ class User(pygame.sprite.Sprite):
         if self.running == False and self.img_num == 1:
             self.img_frame = 1
         else:
-            self.draw_frame_img()
+            # loop time 경과가 animation_time을 넘어서면 새로운 이미지 출력 
+            if self.current_time >= self.animation_time:
+                self.current_time = 0
+                self.draw_frame_img()
+
+                self.img_frame += 1
+                if self.img_frame > int(USER_IMAGE_ARR[self.img_num]["size"]):
+                    self.img_frame = 1
+            else:
+            
+                # print(self.img_frame)
+                self.draw_frame_img()

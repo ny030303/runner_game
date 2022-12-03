@@ -4,15 +4,15 @@ import pygame
 
 from GameMain import MAP_COLLISION_LAYER, SCREEN_HEIGHT, SCREEN_WIDTH
 
-SLUG_IMAGE_ARR = [
+STAR_IMAGE_ARR = [
     {
-        "name": "slug",
-        "url": 'images/PNG/sprites/enemies/slug/slug-',
-        "size": 4
+        "name": "bee",
+        "url": 'images/PNG/sprites/misc/star/star-',
+        "size": 6
     }
 ]
         
-class Slug(pygame.sprite.Sprite):
+class Star(pygame.sprite.Sprite):
     def __init__(self,x,y):
         super().__init__()
         self.img_num = 0
@@ -22,11 +22,10 @@ class Slug(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         
         # (100 / 이미지 수) / 100 = (100 / 이미지 수 * 100)
-        self.animation_time = round(100 / (SLUG_IMAGE_ARR[self.img_num]["size"] * 100), 2)
+        self.animation_time = round(100 / (STAR_IMAGE_ARR[self.img_num]["size"] * 100), 2)
 
         # mt와 결합하여 animation_time을 계산할 시간 초기화
         self.current_time = 0
-        
         # self.reset_pos()
         self.changeX = 0
         self.changeY = 0
@@ -43,12 +42,12 @@ class Slug(pygame.sprite.Sprite):
         self.rect.x = 31*x
     
     def load_img(self):
-        self.image = pygame.image.load(str(SLUG_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
-        self.image = self.image.subsurface(7, 0, 25, 21) # 좌표
-        self.image = pygame.transform.scale(self.image, (31*1.5, 39*1.5)) # 이미지 스케일링
+        self.image = pygame.image.load(str(STAR_IMAGE_ARR[self.img_num]["url"])+str(int(self.img_frame)) + '.png')
+        # self.image = self.image.subsurface(6, 0, 31, 39) # 좌표
+        self.image = pygame.transform.scale(self.image, (31, 39)) # 이미지 스케일링
         
     def draw_frame_img(self):
-        if self.img_frame > SLUG_IMAGE_ARR[self.img_num]["size"]: self.img_frame = 1
+        if self.img_frame > STAR_IMAGE_ARR[self.img_num]["size"]: self.img_frame = 1
         if self.img_frame % 1 == 0: 
             self.load_img()
             if self.direction == "left":
@@ -81,9 +80,9 @@ class Slug(pygame.sprite.Sprite):
         if self.current_time >= self.animation_time:
             self.current_time = 0
             self.draw_frame_img()
-
+            
             self.img_frame += 1
-            if self.img_frame > int(SLUG_IMAGE_ARR[self.img_num]["size"]):
+            if self.img_frame > int(STAR_IMAGE_ARR[self.img_num]["size"]):
                 self.img_frame = 1
         else:
             

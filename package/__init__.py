@@ -5,5 +5,7 @@ from .Model.Level import Level
 from .Model.Tile import Tile
 
 from .Model.Enemy.Bee import Bee
-# from .Model.Enemy.Slug import Slug
+from .Model.Enemy.Slug import Slug
 
+
+from .Model.Item.Star import Star

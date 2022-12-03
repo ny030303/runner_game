@@ -10,53 +10,76 @@ class BackgroundController():
                 "name": "bg1",
                 "url": "background.png",
                 "width": 190,
-                "speed": 0.2
+                "num": 0,
+                "speed": 1
             },
             {
                 "name": "bg2",
                 "url": "middleground.png",
                 "width": 384,
-                "speed": 0.4
+                "speed": 2
             }
         ]
         self.bgShiftX = 0
         
-        self.all_bg_list = []
-        self.all_bg_list.append(pygame.sprite.Group())
-        self.all_bg_list.append(pygame.sprite.Group())
+        # self.all_bg_list = []
+        # self.all_bg_list.append(pygame.sprite.Group())
+        # self.all_bg_list.append(pygame.sprite.Group())
+        
+        self.bg1List = pygame.sprite.Group()
+        self.bg2List = pygame.sprite.Group()
         self.init()
     
     def init(self):
-        for i in range(0, len(self.img_url_list)):
-            self.all_bg_list[i].add(Background(self.img_url_list[i], 0))
-            self.all_bg_list[i].add(Background(self.img_url_list[i], 1))
-            self.all_bg_list[i].add(Background(self.img_url_list[i], 2))
-            self.all_bg_list[i].add(Background(self.img_url_list[i], 3))
-            self.all_bg_list[i].add(Background(self.img_url_list[i], 4))
+            self.bg1List.add(Background(self.img_url_list[0], 0))
+            self.bg1List.add(Background(self.img_url_list[0], 1))
+            self.bg1List.add(Background(self.img_url_list[0], 2))
+            
+            self.bg2List.add(Background(self.img_url_list[1], 0))
+            self.bg2List.add(Background(self.img_url_list[1], 1))
+            self.bg2List.add(Background(self.img_url_list[1], 2))
             
     def update(self):
         print("here!")
     
     #Move layer left/right
-    def shiftBgX(self, shiftX):
+    def shiftBgX(self, shiftX, mt):
         self.bgShiftX += shiftX
         # print(shiftX)
-        for i in range(0, len(self.img_url_list)):
-            for bg in self.all_bg_list[i]:
-                # print(float(bg.bgInfo["speed"]))
-                # if 0.4 == float(bg.bgInfo["speed"]):
-                    bg.moveX(shiftX*float(bg.bgInfo["speed"]))
+        tmp_bgs = self.bg1List.sprites()
+        # print(' #0 ' , tmp_bgs[0].rect.x, tmp_bgs[0].bgInfo["speed"], tmp_bgs[1].rect.x, tmp_bgs[1].bgInfo["speed"], tmp_bgs[2].rect.x, tmp_bgs[2].bgInfo["speed"])
+        for bg in tmp_bgs:
+            # print(' #0 ' , bg.bgInfo["num"], bg.rect.x, "shiftX:", shiftX)
+            if shiftX > 0:
+                bg.moveX(float(bg.bgInfo["speed"]))
+            elif shiftX < 0:
+                bg.moveX(-(float(bg.bgInfo["speed"])))                
+            
+            if (bg.rect.x) < -(bg.imgWSize + 200):
+                bg.rect.x += (bg.imgWSize*3)
+            if (bg.rect.x) > (960 + 200):
+                bg.rect.x -= (bg.imgWSize*3)
+            # if (bg.rect.x) == - bg.imgWSize:
+            #     bg.rect.x = bg.imgWSize
+            # elif (bg.rect.x) == - bg.imgWSize:
+            #     bg.rect.x = bg.imgWSize
+            
+        tmp_bgs = self.bg2List.sprites()
+        for bg in tmp_bgs:
+            if shiftX > 0:
+                bg.moveX(float(bg.bgInfo["speed"]))
+            elif shiftX < 0:
+                bg.moveX(- (float(bg.bgInfo["speed"])))                
+                
+            if (bg.rect.x) < -(bg.imgWSize + 200):
+                bg.rect.x += (bg.imgWSize*3)
+            if (bg.rect.x) > (960 + 200):
+                bg.rect.x -= (bg.imgWSize*3)
                     
         
     #Update layer
     def draw(self, screen):
-        for i in range(0, len(self.img_url_list)):
-            for bg in self.all_bg_list[i]:
-                if bg.rect.x > (bg.imgWSize*2):
-                    bg.rect.x = - (bg.imgWSize*2)
-                elif bg.rect.x < - (bg.imgWSize*2):
-                    bg.rect.x = (bg.imgWSize*2)
-        
-            self.all_bg_list[i].draw(screen)
+        self.bg1List.draw(screen)
+        self.bg2List.draw(screen)
         
         

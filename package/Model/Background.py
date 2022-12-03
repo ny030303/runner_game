@@ -14,25 +14,24 @@ class Background(pygame.sprite.Sprite):
         self.image = pygame.image.load("./images/PNG/environment/layers/"+bgInfo["url"])
         self.image = pygame.transform.scale(self.image, (self.imgWSize, SCREEN_HEIGHT)) # 이미지 스케일링
         self.rect = self.image.get_rect()
-        if wPos == 0: self.rect.x = 0
-        elif wPos == 1: self.rect.x = self.imgWSize
-        elif wPos == 2: self.rect.x = - (self.imgWSize)
-        elif wPos == 3: self.rect.x =  (self.imgWSize * 2) 
-        elif wPos == 4: self.rect.x = - (self.imgWSize * 2) 
- 
+        if wPos == 0: self.rect.x = - (self.imgWSize)
+        elif wPos == 1: self.rect.x =  0
+        elif wPos == 2: self.rect.x = self.imgWSize
     def reset_pos(self):
         """ Called when the block is 'collected' or falls off
             the screen. """
         # self.rect.y = random.randrange(-300, -20)
         # self.rect.x = random.randrange(SCREEN_WIDTH)
-        self.rect.x = - (self.imgWSize)
+        # self.rect.x = - (self.imgWSize)
+        self.rect.x = 0
     
     def moveX(self, mX):
         self.rect.x += mX
+        # print(self.bgInfo['num'], " mX: ", mX, self.rect.x)
         # print(self.bgInfo["name"] + ": " + str(self.rect.x))
         
-    def update(self):
-        """ Automatically called when we need to move the block. """
-        if self.rect.x > SCREEN_WIDTH:
-            self.reset_pos()
+    # def update(self):
+    #     """ Automatically called when we need to move the block. """
+        # if self.rect.x > SCREEN_WIDTH:
+        #     self.reset_pos()
         
