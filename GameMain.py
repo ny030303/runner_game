@@ -15,7 +15,7 @@ class GameMain(object):
     def __init__(self):
         self.game_over = False
         #Set up a level to load
-        self.currentLevelNumber = 1
+        self.currentLevelNumber = 0
         self.currentBgNumber = 0
         
         # 게임시작, 게임오버 버튼 이미지
@@ -31,13 +31,14 @@ class GameMain(object):
         
         # Create your Level (first level is 1)
         self.levels = [] 
-        self.levels.append(package.Level(fileName = "./Resources/level1.tmx"))
-        self.levels.append(package.Level(fileName = "./Resources/level2.tmx"))
+        self.levels.append(package.Level(fileName = "./Resources/level1.tmx", levelNum = 0))
+        self.levels.append(package.Level(fileName = "./Resources/level2.tmx", levelNum = 1))
         self.currentLevel = self.levels[self.currentLevelNumber]
         
          # Create the background
         self.bgs = [] 
-        self.bgs.append(package.BackgroundController())
+        self.bgs.append(package.BackgroundController(0))
+        self.bgs.append(package.BackgroundController(1))
         self.currentBg = self.bgs[self.currentBgNumber]
         
         # self.bee.currentLevel = self.currentLevel
@@ -56,8 +57,13 @@ class GameMain(object):
         # print(self.player.starCount )
         if self.player.starCount > self.currentLevelNumber:
             self.currentLevelNumber += 1
+            
             self.currentLevel = self.levels[self.currentLevelNumber]
             self.player.currentLevel = self.currentLevel
+            
+            self.currentBg = self.bgs[self.currentLevelNumber]
+            self.player.currentBg = self.currentBg
+            
             self.player.reset_pos()
     
     def process_events(self):
@@ -70,7 +76,7 @@ class GameMain(object):
             elif event.type == pygame.KEYDOWN:
                 tileHitList = self.player.getTileHitList()
                 for tile in tileHitList:
-                    if tile.type == "ladder":
+                    if tile.type == "ladder" or tile.type == "ladder_top":
                         try:
                             self.player.swipe_climb_mode(self.player.climbimg)
                         except:
@@ -95,12 +101,16 @@ class GameMain(object):
                     else:
                         self.player.duck()
                 elif event.key == pygame.K_SPACE: # 스페이스바를 누르면 게임시작 버튼이 사라지고 게임시작 플래그 True로 변경
-                    if not self.start_game and not self.game_over:
+                    if not self.start_game and not self.game_over: 
+                        self.mySound = pygame.mixer.Sound( "./sound/enchanted_forest_loop.ogg" )
+                        self.mySound.set_volume(0.5)    
+                        self.mySound.play(-1)
+                        
                         self.btn_start = pygame.transform.scale(self.btn_start, (0, 0))
                         self.start_game = True
-                elif self.start_game and self.game_over: # 시작버튼 눌림 상태에 게임오버 상태
-                    print("대충 리셋하라는 뜻")
-                    self.__init__()
+                    elif self.start_game and self.game_over: # 시작버튼 눌림 상태에 게임오버 상태
+                        print("대충 리셋하라는 뜻")
+                        self.__init__()
                         
             elif event.type == pygame.KEYUP:
                         
@@ -120,6 +130,7 @@ class GameMain(object):
     
     def checkGameOver(self):
         if self.player.hp <= 0:
+            self.mySound.stop()
             self.game_over = True
             
     def run_logic(self, mt):
@@ -128,6 +139,7 @@ class GameMain(object):
         updates positions and checks for collisions.
         """
         if not self.game_over:
+            
             # Move all the sprites
             self.all_sprites_list.update(mt=mt)
             self.currentLevel.update(mt)
@@ -173,7 +185,7 @@ def main():
  
     pygame.display.set_caption("My Game")
     pygame.mouse.set_visible(False)
- 
+    
     # Create our objects and set the data
     done = False
     clock = pygame.time.Clock()

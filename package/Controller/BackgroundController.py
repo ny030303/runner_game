@@ -4,7 +4,7 @@ from package.Model.Background import Background
 
 from GameMain import MAP_COLLISION_LAYER, SCREEN_HEIGHT, SCREEN_WIDTH
 class BackgroundController():
-    def __init__(self):
+    def __init__(self, levelNum):
         self.img_url_list = [
             {
                 "name": "bg1",
@@ -20,6 +20,23 @@ class BackgroundController():
                 "speed": 2
             }
         ]
+        
+        self.img_url_list2 = [
+            {
+                "name": "bg1",
+                "url": "background2.png",
+                "width": 190,
+                "num": 0,
+                "speed": 1
+            },
+            {
+                "name": "bg2",
+                "url": "middleground2.png",
+                "width": 384,
+                "speed": 2
+            }
+        ]
+        
         self.bgShiftX = 0
         
         # self.all_bg_list = []
@@ -28,9 +45,10 @@ class BackgroundController():
         
         self.bg1List = pygame.sprite.Group()
         self.bg2List = pygame.sprite.Group()
-        self.init()
+        self.init(levelNum)
     
-    def init(self):
+    def init(self, levelNum):
+        if levelNum == 0:
             self.bg1List.add(Background(self.img_url_list[0], 0))
             self.bg1List.add(Background(self.img_url_list[0], 1))
             self.bg1List.add(Background(self.img_url_list[0], 2))
@@ -38,6 +56,14 @@ class BackgroundController():
             self.bg2List.add(Background(self.img_url_list[1], 0))
             self.bg2List.add(Background(self.img_url_list[1], 1))
             self.bg2List.add(Background(self.img_url_list[1], 2))
+        else:
+            self.bg1List.add(Background(self.img_url_list2[0], 0))
+            self.bg1List.add(Background(self.img_url_list2[0], 1))
+            self.bg1List.add(Background(self.img_url_list2[0], 2))
+            
+            self.bg2List.add(Background(self.img_url_list2[1], 0))
+            self.bg2List.add(Background(self.img_url_list2[1], 1))
+            self.bg2List.add(Background(self.img_url_list2[1], 2))
             
     def update(self):
         print("here!")

@@ -66,6 +66,8 @@ class User(pygame.sprite.Sprite):
         self.hud_img = pygame.image.load('images/PNG/sprites/misc/hud/hud-4.png')
         self.hud_img = pygame.transform.scale(self.hud_img, (150, 40))
         
+        self.sound_hurt = pygame.mixer.Sound('./sound/hurt.ogg')
+        
         # self.reset_pos()
         self.changeX = 0
         self.changeY = 0
@@ -115,6 +117,12 @@ class User(pygame.sprite.Sprite):
     def jump(self):
         #Check if player is on ground
         # print(self.rect.y)
+        file = "./sound/jump.ogg"
+        pygame.mixer.init()
+        pygame.mixer.music.load(file)
+        pygame.mixer.music.play()
+        # sound_jump = pygame.mixer.Sound('./sound/jump.ogg')
+        # sound_jump.play()
         self.rect.y += 2
         tileHitList = pygame.sprite.spritecollide(self, self.currentLevel.layers[MAP_COLLISION_LAYER].tiles, False)
         self.rect.y -= 2
@@ -300,6 +308,10 @@ class User(pygame.sprite.Sprite):
                 if self.hitedItem == None:
                     print("item hit: ", item)
                     print("스테이지 전환", item)
+                    file = "./sound/star.ogg"
+                    pygame.mixer.init()
+                    pygame.mixer.music.load(file)
+                    pygame.mixer.music.play()
                     self.starCount += 1
                     self.hitedItem = item
         else:
@@ -311,7 +323,10 @@ class User(pygame.sprite.Sprite):
         if len(enemyHitList) > 0:
             for enemy in enemyHitList:
                 if self.hitedEnemy == None:
-                    print("enemy hit: ", enemy)
+                    file = "./sound/hurt.ogg"
+                    pygame.mixer.init()
+                    pygame.mixer.music.load(file)
+                    pygame.mixer.music.play()
                     for x in range(3, -1, -1):
                         if self.hp == x:
                             self.hud_img = pygame.image.load(('images/PNG/sprites/misc/hud/hud-')+str(int(x)) + '.png')

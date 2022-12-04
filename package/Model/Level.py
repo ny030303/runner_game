@@ -4,7 +4,7 @@ import package
 from package.Model.Layer import Layer
 
 class Level(object):
-    def __init__(self, fileName):
+    def __init__(self, fileName, levelNum):
         #Create map object from PyTMX
         self.mapObject = pytmx.load_pygame(fileName)
         
@@ -25,12 +25,22 @@ class Level(object):
         for layer in range(len(self.mapObject.layers)):
             self.layers.append(Layer(index = layer, mapObject = self.mapObject))
             
-        #Create Enemys
-        self.enemys.append(package.Bee(20,20))
-        self.enemys.append(package.Slug(22,36))
-        
-        #Create Enemys
-        self.items.append(package.Star(79,9))
+        if levelNum == 0:
+            #Create Enemys
+            self.enemys.append(package.Bee(20,20))
+            self.enemys.append(package.Slug(22,36))
+            
+            #Create Items
+            self.items.append(package.Star(79,9))
+            
+        if levelNum == 1:
+            #Create Enemys
+            self.enemys.append(package.Bee(30,21))
+            self.enemys.append(package.Bee(55,21))
+            self.enemys.append(package.Slug(61,21))
+            
+            #Create Items
+            # self.items.append(package.Star(79,9))
         
         self.shiftLevelY(-31*4)
         
