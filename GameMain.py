@@ -102,7 +102,7 @@ class GameMain(object):
                         self.player.duck()
                 elif event.key == pygame.K_SPACE: # 스페이스바를 누르면 게임시작 버튼이 사라지고 게임시작 플래그 True로 변경
                     if not self.start_game and not self.game_over: 
-                        self.mySound = pygame.mixer.Sound( "./sound/enchanted_forest_loop.ogg" )
+                        self.mySound = pygame.mixer.Sound( "./sound/enchanted_forest_loop.wav" )
                         self.mySound.set_volume(0.5)    
                         self.mySound.play(-1)
                         
@@ -174,12 +174,17 @@ class GameMain(object):
         center_y = (SCREEN_HEIGHT // 2) - (self.btn_start.get_height() // 2)
         screen.blit(self.btn_start, [center_x, center_y])
                 
-            
+                
+import os   
 def main():
     """ Main program function. """
     # Initialize Pygame and set up the window
+    
+    
     pygame.init()
  
+    # print(os.getcwd()) # Log this line 
+    # filename = os.path.join("sounds", "./sound/enchanted_forest_loop.wav")
     size = [SCREEN_WIDTH, SCREEN_HEIGHT]
     screen = pygame.display.set_mode(size)
  
