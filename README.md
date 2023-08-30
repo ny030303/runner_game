@@ -1,8 +1,10 @@
 #  runner_game
-pygame을 통해 게임만들기
+Creating Games Using Pygame
 ## 파이썬응용 팀 프로젝트
 
- 맵 안에서 플레이어가 달리면서 item (코인, 보물상자 등) 을 찾아 획득하고 enemy들을 피해서 도착 지점까지 가는 게임
+A game where the player runs within a map, collects items (coins, treasure chests, etc.), avoids enemies, and tries to reach the destination point.
+
+맵 안에서 플레이어가 달리면서 item (코인, 보물상자 등) 을 찾아 획득하고 enemy들을 피해서 도착 지점까지 가는 게임
  
 ![image](https://user-images.githubusercontent.com/101242683/205695530-d7d715e3-7a0d-417e-95ef-032fddab2e69.png)
 
